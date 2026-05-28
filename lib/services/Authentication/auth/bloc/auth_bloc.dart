@@ -4,37 +4,60 @@ import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_event.dart
 import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc(AuthProvider provider) : super(const AuthStateLoading()) {
+  AuthBloc(AuthProvider provider) : super(const AuthStateUnintialized()) {
+    on<AuthEventRegister>((event, emit) async {
+      try {
+        emit(AuthStateRegistering(exception: null, isLoading: true));
+        await provider.signUp(email: event.email, password: event.password);
+        emit(AuthStateRegistering(exception: null, isLoading: false));
+        emit(AuthStateRegistered());
+      } on Exception catch (e) {
+        emit(AuthStateRegistering(exception: e, isLoading: false));
+      }
+    });
+
+    on<AuthEventRegistrationSuccess>((event, emit) {
+      emit(AuthStateRegistered());
+    });
+
+    on<AuthEventShouldRegister>((event, emit) {
+      emit(const AuthStateSelectRole());
+    });
+
+    on<AuthEventSelectRole>((event, emit) {
+      emit(AuthStateRegistering(exception: null, isLoading: false));
+    });
+
     on<AuthEventInitialize>((event, emit) async {
       await provider.initialize();
       final user = provider.currentUser;
       if (user == null) {
-        emit(const AuthStateLoggedOut(null));
+        emit(const AuthStateLoggedOut(exception: null, isLoading: false));
       } else {
         emit(AuthStateLoggedIn(user));
       }
     });
 
     on<AuthEventLogIn>((event, emit) async {
-      emit(const AuthStateLoading());
+      emit(AuthStateLoggedOut(exception: null, isLoading: true));
       try {
         final user = await provider.login(
           email: event.email,
           password: event.password,
         );
+        emit(AuthStateLoggedOut(exception: null, isLoading: false));
         emit(AuthStateLoggedIn(user));
       } on Exception catch (e) {
-        emit(AuthStateLoggedOut(e));
+        emit(AuthStateLoggedOut(exception: e, isLoading: false));
       }
     });
 
-    on<AuthEventLogOut>((event, emit) {
+    on<AuthEventLogOut>((event, emit) async {
       try {
-        emit(AuthStateLoading());
-        provider.logout();
-        emit(AuthStateLoggedOut(null));
+        await provider.logout();
+        emit(AuthStateLoggedOut(exception: null, isLoading: false));
       } on Exception catch (e) {
-        emit(AuthStateLogoutFailure(e));
+        emit(AuthStateLoggedOut(exception: e, isLoading: false));
       }
     });
   }

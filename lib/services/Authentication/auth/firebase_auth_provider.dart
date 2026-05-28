@@ -31,12 +31,17 @@ class FirebaseAuthProvider implements AuthProvider {
         throw UserNotLoggedInAuthException();
       }
     } on FirebaseAuthException catch (e) {
+      print("Error: ${e.code}");
       switch (e.code) {
-        case "invalid-credential":
+        case 'invalid-credential':
           throw InvalidCredentialAuthException();
+        case 'invalid-email':
+          throw InvalidEmailAuthException();
         default:
           throw GenericAuthException();
       }
+    } catch (_) {
+      throw GenericAuthException();
     }
   }
 
@@ -44,6 +49,8 @@ class FirebaseAuthProvider implements AuthProvider {
   Future<void> logout() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
+      await FirebaseAuth.instance.signOut();
+    } else {
       throw UserNotLoggedInAuthException();
     }
   }
@@ -54,7 +61,7 @@ class FirebaseAuthProvider implements AuthProvider {
     required String password,
   }) async {
     try {
-      FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -67,7 +74,7 @@ class FirebaseAuthProvider implements AuthProvider {
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'invalid-email':
-          throw InvalidEmailAuthException;
+          throw InvalidEmailAuthException();
         case 'weak-password':
           throw WeakPasswordAuthException();
         case 'email-already-in-use':
@@ -75,6 +82,8 @@ class FirebaseAuthProvider implements AuthProvider {
         default:
           throw GenericAuthException();
       }
+    } catch (_) {
+      throw GenericAuthException();
     }
   }
 

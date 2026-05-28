@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ridesharingapp/core/constants/colors.dart';
 import 'package:ridesharingapp/core/dialogs/error_dialog.dart';
-import 'package:ridesharingapp/core/routes/routes.dart';
+import 'package:ridesharingapp/core/dialogs/loading_dialog.dart';
 import 'package:ridesharingapp/core/widgets/app_button.dart';
 import 'package:ridesharingapp/core/widgets/auth_view_card.dart';
 import 'package:ridesharingapp/core/widgets/text_field.dart';
@@ -21,6 +21,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
+  CloseDialog? _closeDialog;
 
   @override
   void initState() {
@@ -31,78 +32,106 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            AuthViewCard(),
-            SizedBox(height: 20),
-            Text(
-              "Login To Your Account",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: const Color.fromARGB(255, 75, 75, 75),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) async {
+        if (state is AuthStateLoggedOut) {
+          final closeDialog = _closeDialog;
+
+          //show loader
+          if (!state.isLoading && closeDialog != null) {
+            closeDialog();
+            _closeDialog = null;
+          } else if (state.isLoading && closeDialog == null) {
+            _closeDialog = showLoadingDialog(
+              context: context,
+              text: "Logging In",
+            );
+          }
+
+          Future.delayed(Duration(milliseconds: 200));
+
+          //handle exceptions
+          if (state.exception is InvalidCredentialAuthException) {
+            await showErrorDialog(
+              content: "Invalid Credentials",
+              context: context,
+            );
+          } else if (state.exception is InvalidEmailAuthException) {
+            await showErrorDialog(content: "Invalid Email", context: context);
+          } else if (state.exception is GenericAuthException) {
+            await showErrorDialog(
+              content: "Something went wrong",
+              context: context,
+            );
+          }
+        }
+      },
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              AuthViewCard(),
+              SizedBox(height: 20),
+              Text(
+                "Login To Your Account",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  color: const Color.fromARGB(255, 75, 75, 75),
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            AppTextField(
-              controller: emailController,
-              topHint: "Enter Your Email",
-              hintText: "Email",
-              icon: Icons.email_outlined,
-            ),
-            SizedBox(height: 20),
-            AppTextField(
-              controller: passwordController,
-              topHint: "Enter Your Password",
-              hintText: "********",
-              icon: Icons.lock_outline,
-            ),
-            SizedBox(height: 20),
-            BlocListener<AuthBloc, AuthState>(
-              listener: (context, state) {
-                if (state is AuthStateLoggedOut) {
-                  if (state.exception is InvalidCredentialAuthException) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => ShowErrorDialog(
-                        title: "Invalid Credentials",
-                        content: "Please check and try again",
-                      ),
-                    );
-                  } else if (state is GenericAuthException) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => ShowErrorDialog(
-                        title: "Authentication Error",
-                        content: "An error has occured",
-                      ),
-                    );
-                  }
-                }
-              },
-              child: AppButton(
+              SizedBox(height: 20),
+              AppTextField(
+                controller: emailController,
+                topHint: "Enter Your Email",
+                hintText: "Email",
+                icon: Icons.email_outlined,
+              ),
+              SizedBox(height: 13),
+              AppTextField(
+                controller: passwordController,
+                topHint: "Enter Your Password",
+                hintText: "********",
+                icon: Icons.lock_outline,
+                obscureText: true,
+              ),
+              SizedBox(height: 20),
+              AppButton(
                 buttonName: "Login",
-                onPressed: () {
+                onPressed: () async {
                   final email = emailController.text;
                   final password = passwordController.text;
 
-                  context.read<AuthBloc>().add(AuthEventLogIn(email, password));
+                  if (email.isEmpty) {
+                    await showErrorDialog(
+                      content: "Email Field Cannot be empty",
+                      context: context,
+                    );
+                  } else if (password.isEmpty) {
+                    showErrorDialog(
+                      content: "Password field cannot be empty",
+                      context: context,
+                    );
+                  } else {
+                    context.read<AuthBloc>().add(
+                      AuthEventLogIn(email, password),
+                    );
+                  }
                 },
               ),
-            ),
-            SizedBox(height: 5),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(selectRole);
-              },
-              child: Text(
-                "Don't have an account, Register here",
-                style: TextStyle(color: AppColors.backgroundColor),
+              SizedBox(height: 5),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(AuthEventShouldRegister());
+                  //Navigator.of(context).pushNamed(selectRole);
+                },
+                child: Text(
+                  "Don't have an account, Register here",
+                  style: TextStyle(color: AppColors.backgroundColor),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -1,29 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:ridesharingapp/core/dialogs/generic_dialog.dart';
 
-class ShowErrorDialog extends StatelessWidget {
-  final String title;
-  final String content;
-
-  const ShowErrorDialog({
-    super.key,
-    required this.title,
-    required this.content,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(title),
-      content: Text(content),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text("Ok"),
-        ),
-      ],
-    );
-  }
+Future<void> showErrorDialog({
+  required String content,
+  required BuildContext context,
+}) {
+  return showGenericDialog(
+    context: context,
+    title: "An Error Occured",
+    content: content,
+    optionsBuilder: () => {'Ok': null},
+  );
 }

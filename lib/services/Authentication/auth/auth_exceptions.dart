@@ -1,15 +1,15 @@
 //LOGIN
-class InvalidCredentialAuthException {}
+class InvalidCredentialAuthException implements Exception {}
 
 //register
-class InvalidEmailAuthException {}
+class InvalidEmailAuthException implements Exception {}
 
-class WeakPasswordAuthException {}
+class WeakPasswordAuthException implements Exception {}
 
-class EmailAlreadyInUseAuthException {}
+class EmailAlreadyInUseAuthException implements Exception {}
 
 //generic
 
-class GenericAuthException {}
+class GenericAuthException implements Exception {}
 
-class UserNotLoggedInAuthException {}
+class UserNotLoggedInAuthException implements Exception {}

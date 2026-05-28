@@ -5,6 +5,7 @@ class AppTextField extends StatelessWidget {
   final String topHint;
   final String hintText;
   final IconData icon;
+  final bool? obscureText;
 
   const AppTextField({
     super.key,
@@ -12,6 +13,7 @@ class AppTextField extends StatelessWidget {
     required this.topHint,
     required this.hintText,
     required this.icon,
+    this.obscureText,
   });
 
   @override
@@ -24,12 +26,15 @@ class AppTextField extends StatelessWidget {
           SizedBox(height: 5),
           TextField(
             controller: controller,
+            obscureText: obscureText ?? false,
             decoration: InputDecoration(
               hintText: hintText,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
+               
             ),
+            
           ),
         ],
       ),

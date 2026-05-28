@@ -1,7 +1,14 @@
+import 'dart:io';
+
+import 'package:equatable/equatable.dart';
 import 'package:ridesharingapp/services/Authentication/auth/auth_user.dart';
 
 abstract class AuthState {
   const AuthState();
+}
+
+class AuthStateUnintialized extends AuthState {
+  const AuthStateUnintialized();
 }
 
 class AuthStateLoggedIn extends AuthState {
@@ -9,16 +16,31 @@ class AuthStateLoggedIn extends AuthState {
   const AuthStateLoggedIn(this.user);
 }
 
-class AuthStateLoading extends AuthState {
-  const AuthStateLoading();
-}
-
-class AuthStateLoggedOut extends AuthState {
+class AuthStateRegistering extends AuthState with EquatableMixin {
   final Exception? exception;
-  const AuthStateLoggedOut(this.exception);
+  final bool isLoading;
+  const AuthStateRegistering({
+    required this.exception,
+    required this.isLoading,
+  });
+
+  @override
+  List<Object?> get props => [exception, isLoading];
 }
 
-class AuthStateLogoutFailure extends AuthState {
-  final Exception exception;
-  const AuthStateLogoutFailure(this.exception);
+class AuthStateSelectRole extends AuthState {
+  const AuthStateSelectRole();
+}
+
+class AuthStateRegistered extends AuthState {
+  const AuthStateRegistered();
+}
+
+class AuthStateLoggedOut extends AuthState with EquatableMixin {
+  final Exception? exception;
+  final bool isLoading;
+  const AuthStateLoggedOut({required this.exception, required this.isLoading});
+
+  @override
+  List<Object?> get props => [exception, isLoading];
 }
