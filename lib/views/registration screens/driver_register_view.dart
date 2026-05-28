@@ -12,14 +12,14 @@ import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_bloc.dart'
 import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_event.dart';
 import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_state.dart';
 
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
+class DriverRegisterView extends StatefulWidget {
+  const DriverRegisterView({super.key});
 
   @override
-  State<RegisterView> createState() => _RegisterViewState();
+  State<DriverRegisterView> createState() => _DriverRegisterViewState();
 }
 
-class _RegisterViewState extends State<RegisterView> {
+class _DriverRegisterViewState extends State<DriverRegisterView> {
   late final TextEditingController nameController;
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
@@ -37,7 +37,7 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
-        if (state is AuthStateRiderRegistering) {
+        if (state is AuthStateDriverRegistering) {
           final closeDialog = _closeDialog;
           if (!state.isLoading && closeDialog != null) {
             closeDialog();
@@ -79,7 +79,7 @@ class _RegisterViewState extends State<RegisterView> {
               AuthViewCard(),
               SizedBox(height: 20),
               Text(
-                "Register As A Rider",
+                "Register As A Driver",
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
@@ -122,11 +122,11 @@ class _RegisterViewState extends State<RegisterView> {
                     );
                   } else {
                     context.read<AuthBloc>().add(
-                      AuthEventRiderRegister(
+                      AuthEventDriverRegister(
                         email: email,
                         password: password,
                         name: name,
-                        role: UserRole.rider.name,
+                        role: UserRole.driver.name,
                       ),
                     );
                   }

@@ -8,10 +8,30 @@ class AuthEventLogIn extends AuthEvent {
   AuthEventLogIn(this.email, this.password);
 }
 
-class AuthEventRegister extends AuthEvent {
+class AuthEventRiderRegister extends AuthEvent {
   final String email;
   final String password;
-  AuthEventRegister(this.email, this.password);
+  final String name;
+  final String role;
+  AuthEventRiderRegister({
+    required this.email,
+    required this.password,
+    required this.name,
+    required this.role,
+  });
+}
+
+class AuthEventDriverRegister extends AuthEvent {
+  final String email;
+  final String password;
+  final String name;
+  final String role;
+  AuthEventDriverRegister({
+    required this.email,
+    required this.password,
+    required this.name,
+    required this.role,
+  });
 }
 
 class AuthEventRegistrationSuccess extends AuthEvent {
@@ -26,8 +46,12 @@ class AuthEventInitialize extends AuthEvent {
   const AuthEventInitialize();
 }
 
-class AuthEventSelectRole extends AuthEvent {
-  const AuthEventSelectRole();
+class AuthEventSelectRiderRole extends AuthEvent {
+  const AuthEventSelectRiderRole();
+}
+
+class AuthEventSelectDriverRole extends AuthEvent {
+  const AuthEventSelectDriverRole();
 }
 
 class AuthEventLogOut extends AuthEvent {

@@ -5,7 +5,6 @@ import 'package:ridesharingapp/core/widgets/auth_view_card.dart';
 import 'package:ridesharingapp/core/widgets/driver_or_rider_register_navigator.dart';
 import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_bloc.dart';
 import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_event.dart';
-import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SelectRoleToRegister extends StatelessWidget {
@@ -34,7 +33,7 @@ class SelectRoleToRegister extends StatelessWidget {
               role: "Driver",
               roleInfo: "Tap here to register as a Driver",
               navigate: () {
-                Navigator.of(context).pushNamed(driverLogin);
+                context.read<AuthBloc>().add(AuthEventSelectDriverRole());
               },
             ),
           ),
@@ -45,7 +44,7 @@ class SelectRoleToRegister extends StatelessWidget {
               role: "Rider",
               roleInfo: "Tap here to register In as a Rider",
               navigate: () {
-                context.read<AuthBloc>().add(AuthEventSelectRole());
+                context.read<AuthBloc>().add(AuthEventSelectRiderRole());
               },
             ),
           ),

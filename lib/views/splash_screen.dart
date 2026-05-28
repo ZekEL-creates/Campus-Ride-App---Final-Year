@@ -4,8 +4,10 @@ import 'package:ridesharingapp/core/constants/colors.dart';
 import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_bloc.dart';
 import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_event.dart';
 import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_state.dart';
+import 'package:ridesharingapp/views/driver_map_view.dart';
 import 'package:ridesharingapp/views/login_view.dart';
 import 'package:ridesharingapp/views/map_view.dart';
+import 'package:ridesharingapp/views/registration%20screens/driver_register_view.dart';
 import 'package:ridesharingapp/views/registration%20screens/rider_register_view.dart';
 import 'package:ridesharingapp/views/registration%20screens/success_screen.dart';
 import 'package:ridesharingapp/views/select_role_register_screen.dart';
@@ -28,12 +30,16 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        if (state is AuthStateLoggedIn) {
+        if (state is AuthStateLoggedInAsRider) {
           return const MapView();
+        } else if (state is AuthStateLoggedInAsDriver) {
+          return const DriverMapView();
         } else if (state is AuthStateLoggedOut) {
           return const LoginView();
-        } else if (state is AuthStateRegistering) {
+        } else if (state is AuthStateRiderRegistering) {
           return const RegisterView();
+        } else if (state is AuthStateDriverRegistering) {
+          return const DriverRegisterView();
         } else if (state is AuthStateSelectRole) {
           return const SelectRoleToRegister();
         } else if (state is AuthStateRegistered) {
