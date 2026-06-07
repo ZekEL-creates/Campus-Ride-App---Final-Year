@@ -3,31 +3,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ridesharingapp/core/constants/colors.dart';
 import 'package:ridesharingapp/core/dialogs/error_dialog.dart';
 import 'package:ridesharingapp/core/dialogs/loading_dialog.dart';
-import 'package:ridesharingapp/core/enum/user_role.dart';
 import 'package:ridesharingapp/core/widgets/app_button.dart';
 import 'package:ridesharingapp/core/widgets/auth_view_card.dart';
 import 'package:ridesharingapp/core/widgets/text_field.dart';
-import 'package:ridesharingapp/services/Authentication/auth/auth_exceptions.dart';
-import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_bloc.dart';
-import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_event.dart';
-import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_state.dart';
+import 'package:ridesharingapp/features/Authentication/data/auth_exceptions/auth_exceptions.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_bloc.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_event.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_state.dart';
 
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
   @override
-  State<RegisterView> createState() => _RegisterViewState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _RegisterViewState extends State<RegisterView> {
-  late final TextEditingController nameController;
+class _LoginViewState extends State<LoginView> {
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
   CloseDialog? _closeDialog;
 
   @override
   void initState() {
-    nameController = TextEditingController();
     emailController = TextEditingController();
     passwordController = TextEditingController();
     super.initState();
@@ -37,36 +34,33 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
-        if (state is AuthStateRiderRegistering) {
+        if (state is AuthStateLoggedOut) {
           final closeDialog = _closeDialog;
+
+          //show loader
           if (!state.isLoading && closeDialog != null) {
             closeDialog();
             _closeDialog = null;
           } else if (state.isLoading && closeDialog == null) {
             _closeDialog = showLoadingDialog(
               context: context,
-              text: "Registering",
+              text: "Logging In",
             );
           }
 
-          if (state.exception is InvalidEmailAuthException) {
+          Future.delayed(Duration(milliseconds: 200));
+
+          //handle exceptions
+          if (state.exception is InvalidCredentialAuthException) {
             await showErrorDialog(
-              content: "You have entered an invalid email",
+              content: "Invalid Credentials",
               context: context,
             );
-          } else if (state.exception is WeakPasswordAuthException) {
-            await showErrorDialog(
-              content: "Password should be 8 characters long",
-              context: context,
-            );
-          } else if (state.exception is EmailAlreadyInUseAuthException) {
-            await showErrorDialog(
-              content: "Email already exists",
-              context: context,
-            );
+          } else if (state.exception is InvalidEmailAuthException) {
+            await showErrorDialog(content: "Invalid Email", context: context);
           } else if (state.exception is GenericAuthException) {
             await showErrorDialog(
-              content: "Unable to Register. Please Try Again",
+              content: "Something went wrong",
               context: context,
             );
           }
@@ -79,55 +73,48 @@ class _RegisterViewState extends State<RegisterView> {
               AuthViewCard(),
               SizedBox(height: 20),
               Text(
-                "Register As A Rider",
+                "Login To Your Account",
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF4B4B4B),
+                  color: const Color.fromARGB(255, 75, 75, 75),
                 ),
               ),
-              SizedBox(height: 10),
-              AppTextField(
-                controller: nameController,
-                topHint: "Enter Your Name",
-                hintText: "Enter Name",
-                icon: Icons.person_outline,
-              ),
-              SizedBox(height: 10),
+              SizedBox(height: 20),
               AppTextField(
                 controller: emailController,
                 topHint: "Enter Your Email",
                 hintText: "Email",
                 icon: Icons.email_outlined,
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 13),
               AppTextField(
                 controller: passwordController,
                 topHint: "Enter Your Password",
-                obscureText: true,
                 hintText: "********",
                 icon: Icons.lock_outline,
+                obscureText: true,
               ),
               SizedBox(height: 20),
               AppButton(
-                buttonName: "Register",
-                onPressed: () {
+                buttonName: "Login",
+                onPressed: () async {
                   final email = emailController.text;
                   final password = passwordController.text;
-                  final name = nameController.text;
-                  if (email.isEmpty || password.isEmpty || name.isEmpty) {
+
+                  if (email.isEmpty) {
+                    await showErrorDialog(
+                      content: "Email Field Cannot be empty",
+                      context: context,
+                    );
+                  } else if (password.isEmpty) {
                     showErrorDialog(
-                      content: "Fields Cannot be empty",
+                      content: "Password field cannot be empty",
                       context: context,
                     );
                   } else {
                     context.read<AuthBloc>().add(
-                      AuthEventRiderRegister(
-                        email: email,
-                        password: password,
-                        name: name,
-                        role: UserRole.rider.name,
-                      ),
+                      AuthEventLogIn(email, password),
                     );
                   }
                 },
@@ -135,10 +122,11 @@ class _RegisterViewState extends State<RegisterView> {
               SizedBox(height: 5),
               TextButton(
                 onPressed: () {
-                  context.read<AuthBloc>().add(const AuthEventLogOut());
+                  context.read<AuthBloc>().add(AuthEventShouldRegister());
+                  //Navigator.of(context).pushNamed(selectRole);
                 },
                 child: Text(
-                  "Already have an account, Login here",
+                  "Don't have an account, Register here",
                   style: TextStyle(color: AppColors.backgroundColor),
                 ),
               ),

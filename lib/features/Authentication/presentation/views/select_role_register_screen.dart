@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-
-import 'package:ridesharingapp/core/routes/routes.dart';
 import 'package:ridesharingapp/core/widgets/auth_view_card.dart';
 import 'package:ridesharingapp/core/widgets/driver_or_rider_register_navigator.dart';
-import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_bloc.dart';
-import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_event.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_bloc.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SelectRoleToRegister extends StatelessWidget {

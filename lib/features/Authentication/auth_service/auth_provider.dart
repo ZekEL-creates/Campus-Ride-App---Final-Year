@@ -1,4 +1,4 @@
-import 'package:ridesharingapp/services/Authentication/models/app_user.dart';
+import 'package:ridesharingapp/features/Authentication/data/models/app_user.dart';
 
 abstract class AuthProvider {
   Future<AppUser> login({required String email, required String password});

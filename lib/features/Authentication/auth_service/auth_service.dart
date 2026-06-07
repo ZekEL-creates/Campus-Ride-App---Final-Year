@@ -1,6 +1,7 @@
-import 'package:ridesharingapp/services/Authentication/auth/auth_provider.dart';
-import 'package:ridesharingapp/services/Authentication/auth/firebase_auth_provider.dart';
-import 'package:ridesharingapp/services/Authentication/models/app_user.dart';
+import 'package:ridesharingapp/features/Authentication/auth_service/auth_provider.dart';
+import 'package:ridesharingapp/features/Authentication/auth_service/firebase_auth_provider.dart';
+
+import 'package:ridesharingapp/features/Authentication/data/models/app_user.dart';
 
 class AuthService extends AuthProvider {
   final AuthProvider provider;

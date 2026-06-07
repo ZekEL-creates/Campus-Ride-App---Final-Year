@@ -7,10 +7,10 @@ import 'package:ridesharingapp/core/enum/user_role.dart';
 import 'package:ridesharingapp/core/widgets/app_button.dart';
 import 'package:ridesharingapp/core/widgets/auth_view_card.dart';
 import 'package:ridesharingapp/core/widgets/text_field.dart';
-import 'package:ridesharingapp/services/Authentication/auth/auth_exceptions.dart';
-import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_bloc.dart';
-import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_event.dart';
-import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_state.dart';
+import 'package:ridesharingapp/features/Authentication/data/auth_exceptions/auth_exceptions.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_bloc.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_event.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_state.dart';
 
 class DriverRegisterView extends StatefulWidget {
   const DriverRegisterView({super.key});

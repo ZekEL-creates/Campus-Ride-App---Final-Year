@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ridesharingapp/core/constants/colors.dart';
 import 'package:ridesharingapp/core/widgets/app_button.dart';
-import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_bloc.dart';
-import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_event.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_bloc.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_event.dart';
 
 class SuccessScreen extends StatelessWidget {
   const SuccessScreen({super.key});

@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart'
     show FirebaseAuth, FirebaseAuthException;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ridesharingapp/firebase_options.dart';
-import 'package:ridesharingapp/services/Authentication/auth/auth_exceptions.dart';
-import 'package:ridesharingapp/services/Authentication/auth/auth_provider.dart';
+import 'package:ridesharingapp/features/Authentication/data/auth_exceptions/auth_exceptions.dart';
+import 'package:ridesharingapp/features/Authentication/auth_service/auth_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ridesharingapp/services/Authentication/models/app_user.dart';
+import 'package:ridesharingapp/features/Authentication/data/models/app_user.dart';
 
 class FirebaseAuthProvider implements AuthProvider {
   @override

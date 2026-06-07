@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ridesharingapp/core/constants/colors.dart';
-import 'package:ridesharingapp/core/routes/routes.dart';
-import 'package:ridesharingapp/services/Authentication/auth/bloc/auth_bloc.dart';
-import 'package:ridesharingapp/services/Authentication/auth/firebase_auth_provider.dart';
-import 'package:ridesharingapp/views/login_view.dart';
-import 'package:ridesharingapp/views/map_view.dart';
-import 'package:ridesharingapp/views/registration%20screens/rider_register_view.dart';
-import 'package:ridesharingapp/views/select_role_register_screen.dart';
-import 'package:ridesharingapp/views/splash_screen.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_bloc.dart';
+import 'package:ridesharingapp/features/Authentication/auth_service/firebase_auth_provider.dart';
+import 'package:ridesharingapp/features/Authentication/presentation/views/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,12 +20,6 @@ void main() {
         create: (context) => AuthBloc(FirebaseAuthProvider()),
         child: SplashScreen(),
       ),
-      routes: {
-        selectRole: (context) => SelectRoleToRegister(),
-        map: (context) => MapView(),
-        login: (context) => LoginView(),
-        riderLogin: (context) => RegisterView(),
-      },
     ),
   );
 }

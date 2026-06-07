@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:ridesharingapp/services/Authentication/auth/auth_user.dart';
-import 'package:ridesharingapp/services/Authentication/models/app_user.dart';
+import 'package:ridesharingapp/features/Authentication/data/models/app_user.dart';
 
 abstract class AuthState {
   const AuthState();

@@ -6,6 +6,7 @@ class AppTextField extends StatelessWidget {
   final String hintText;
   final IconData icon;
   final bool? obscureText;
+  final Widget? suffixIcon;
 
   const AppTextField({
     super.key,
@@ -14,6 +15,7 @@ class AppTextField extends StatelessWidget {
     required this.hintText,
     required this.icon,
     this.obscureText,
+    this.suffixIcon,
   });
 
   @override
@@ -27,14 +29,14 @@ class AppTextField extends StatelessWidget {
           TextField(
             controller: controller,
             obscureText: obscureText ?? false,
+
             decoration: InputDecoration(
               hintText: hintText,
+              suffixIcon: suffixIcon,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-               
             ),
-            
           ),
         ],
       ),
