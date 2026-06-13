@@ -4,8 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:ridesharingapp/firebase_options.dart';
 import 'package:ridesharingapp/features/Authentication/data/auth_exceptions/auth_exceptions.dart';
 import 'package:ridesharingapp/features/Authentication/auth_service/auth_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ridesharingapp/features/Authentication/data/models/app_user.dart';
+import 'package:ridesharingapp/services/firebase_storage_service.dart';
 
 class FirebaseAuthProvider implements AuthProvider {
   @override
@@ -20,7 +20,9 @@ class FirebaseAuthProvider implements AuthProvider {
     required String email,
     required String password,
   }) async {
-    final users = FirebaseFirestore.instance.collection('users');
+    final userStorage = FirebaseStorageService();
+    final String collectionName = 'users';
+    //final users = FirebaseFirestore.instance.collection('users');
     try {
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
@@ -28,13 +30,23 @@ class FirebaseAuthProvider implements AuthProvider {
       );
       final firebaseUser = credential.user;
       if (firebaseUser != null) {
-        final doc = await users.doc(firebaseUser.uid).get();
-        if (!doc.exists) {
+        final user = await userStorage.getData(
+          collectionName: collectionName,
+          id: firebaseUser.uid,
+          fromJson: AppUser.fromJson,
+        );
+        if (user == null) {
           await FirebaseAuth.instance.signOut();
           throw UserNotLoggedInAuthException();
         }
-        final user = AppUser.fromJson(doc.data()!);
         return user;
+
+        // final doc = await users.doc(firebaseUser.uid).get();
+        // if (!doc.exists) {
+        //   await FirebaseAuth.instance.signOut();
+        //   throw UserNotLoggedInAuthException();
+        // }
+        // final user = AppUser.fromJson(doc.data()!);
       } else {
         throw UserNotLoggedInAuthException();
       }
@@ -69,8 +81,11 @@ class FirebaseAuthProvider implements AuthProvider {
     required String name,
     required String role,
   }) async {
-    final users = FirebaseFirestore.instance.collection('users');
-    final drivers = FirebaseFirestore.instance.collection('drivers');
+    final userStorage = FirebaseStorageService();
+    final String collectionName = 'users';
+    final String driverCollectionName = 'drivers';
+    // final users = FirebaseFirestore.instance.collection('users');
+    // final drivers = FirebaseFirestore.instance.collection('drivers');
     try {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -82,10 +97,22 @@ class FirebaseAuthProvider implements AuthProvider {
           email: email,
           role: role,
         );
-        await users.doc(firebaseUser.uid).set(user.toJson());
+        await userStorage.create(
+          collectionName: collectionName,
+          id: firebaseUser.uid,
+          data: user.toJson(),
+        );
         if (user.role == 'driver') {
-          await drivers.doc(firebaseUser.uid).set(user.toJson());
+          await userStorage.create(
+            collectionName: driverCollectionName,
+            id: firebaseUser.uid,
+            data: user.toJson(),
+          );
         }
+        // await users.doc(firebaseUser.uid).set(user.toJson());
+        // if (user.role == 'driver') {
+        //   await drivers.doc(firebaseUser.uid).set(user.toJson());
+        // }
         return user;
       } else {
         throw UserNotLoggedInAuthException();
@@ -108,12 +135,20 @@ class FirebaseAuthProvider implements AuthProvider {
 
   @override
   Future<AppUser?> get currentUser async {
-    final users = FirebaseFirestore.instance.collection('users');
+    final userStorage = FirebaseStorageService();
+    final String collectionName = 'users';
+    //final users = FirebaseFirestore.instance.collection('users');
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      final doc = await users.doc(user.uid).get();
-      final currentUser = doc.data();
-      return AppUser.fromJson(currentUser!);
+      return userStorage.getData(
+        collectionName: collectionName,
+        id: user.uid,
+        fromJson: AppUser.fromJson,
+      );
+
+      // final doc = await users.doc(user.uid).get();
+      // final currentUser = doc.data();
+      // return AppUser.fromJson(currentUser!);
     } else {
       return null;
     }

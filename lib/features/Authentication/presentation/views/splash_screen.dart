@@ -6,11 +6,12 @@ import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_event.da
 import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_state.dart';
 import 'package:ridesharingapp/features/Authentication/presentation/views/driver_map_view.dart';
 import 'package:ridesharingapp/features/Authentication/presentation/login_view.dart';
-import 'package:ridesharingapp/features/map/presentation/map_view.dart';
+//import 'package:ridesharingapp/features/map/presentation/map_view.dart';
 import 'package:ridesharingapp/features/Authentication/presentation/registration%20screens/driver_register_view.dart';
 import 'package:ridesharingapp/features/Authentication/presentation/registration%20screens/rider_register_view.dart';
 import 'package:ridesharingapp/features/Authentication/presentation/registration%20screens/success_screen.dart';
 import 'package:ridesharingapp/features/Authentication/presentation/views/select_role_register_screen.dart';
+import 'package:ridesharingapp/features/ride_request/presentation/rider_home_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -31,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthStateLoggedInAsRider) {
-          return const MapView();
+          return const RiderHomePage();
         } else if (state is AuthStateLoggedInAsDriver) {
           return const DriverMapView();
         } else if (state is AuthStateLoggedOut) {
@@ -42,6 +43,8 @@ class _SplashScreenState extends State<SplashScreen> {
           return const DriverRegisterView();
         } else if (state is AuthStateSelectRole) {
           return const SelectRoleToRegister();
+        } else if (state is AuthStateLoading) {
+          return const Center(child: CircularProgressIndicator());
         } else if (state is AuthStateRegistered) {
           return const SuccessScreen();
         } else {

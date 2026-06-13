@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ridesharingapp/features/map/data/map_exceptions.dart';
@@ -15,9 +16,16 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<MapView> {
+  String? darkMapStyle;
+
+  Future<void> loadMapStyle() async {
+    darkMapStyle = await rootBundle.loadString('assets/json/dark_theme.json');
+  }
+
   @override
   void initState() {
     super.initState();
+    loadMapStyle();
   }
 
   @override
@@ -35,9 +43,11 @@ class _MapViewState extends State<MapView> {
           }
           if (state is MapStateLoaded) {
             return GoogleMap(
+              padding: EdgeInsets.only(top: 50, bottom: -20, right: 10),
               mapType: MapType.normal,
               myLocationEnabled: true,
               mapToolbarEnabled: true,
+              style: darkMapStyle,
               onMapCreated: (controller) {},
               initialCameraPosition: CameraPosition(
                 target: state.currentLocation,

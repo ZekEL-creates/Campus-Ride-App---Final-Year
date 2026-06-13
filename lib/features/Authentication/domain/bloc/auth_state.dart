@@ -48,6 +48,10 @@ class AuthStateSelectRole extends AuthState {
   const AuthStateSelectRole();
 }
 
+class AuthStateLoading extends AuthState {
+  const AuthStateLoading();
+}
+
 class AuthStateRegistered extends AuthState {
   const AuthStateRegistered();
 }

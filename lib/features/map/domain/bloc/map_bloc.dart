@@ -11,12 +11,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       emit(MapStateLoading());
       try {
         final position = await repository.getCurrentLocation();
-        print("Postion: $position");
         final locations = await repository.getCampusLocations();
         Set<Marker> markers = {};
 
         for (var doc in locations.docs) {
-          print(doc.data());
           markers.add(
             Marker(
               markerId: MarkerId(doc.id),
@@ -28,7 +26,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             ),
           );
         }
-        print("Markers: $markers");
         emit(
           MapStateLoaded(
             currentLocation: LatLng(position.latitude, position.longitude),
