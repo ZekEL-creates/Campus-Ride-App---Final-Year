@@ -60,7 +60,7 @@ class _LoginViewState extends State<LoginView> {
             await showErrorDialog(content: "Invalid Email", context: context);
           } else if (state.exception is GenericAuthException) {
             await showErrorDialog(
-              content: "Something went wrong",
+              content: "Something went wrong. Check your internet connection",
               context: context,
             );
           }

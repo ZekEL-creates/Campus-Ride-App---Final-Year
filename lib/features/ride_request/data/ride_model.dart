@@ -7,6 +7,9 @@ class RideModel {
   final double destinationLatitude;
   final double destinationLongitude;
   final String status;
+  final DateTime requestedAt;
+  final double? driverLatitude;
+  final double? driverLongitude;
 
   RideModel({
     required this.id,
@@ -17,6 +20,9 @@ class RideModel {
     required this.destinationLatitude,
     required this.destinationLongitude,
     required this.status,
+    required this.requestedAt,
+    this.driverLatitude,
+    this.driverLongitude,
   });
 
   factory RideModel.fromJson(Map<String, dynamic> json) => RideModel(
@@ -28,6 +34,9 @@ class RideModel {
     destinationLatitude: json['destinationLatitude'],
     destinationLongitude: json['destinationLongitude'],
     status: json['status'],
+    requestedAt: json['requested_at'],
+    driverLatitude: json['driver_latitude'],
+    driverLongitude: json['driver_longitude'],
   );
 
   Map<String, dynamic> toJson() {
@@ -40,6 +49,9 @@ class RideModel {
       'destinationLatitude': destinationLatitude,
       'destinationLongitude': destinationLongitude,
       'status': status,
+      'requested_at': requestedAt,
+      'driver_latitude': driverLatitude,
+      'driver_longitude': driverLongitude,
     };
   }
 }

@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ridesharingapp/core/constants/colors.dart';
 import 'package:ridesharingapp/core/widgets/app_button.dart';
 import 'package:ridesharingapp/features/Authentication/data/models/app_user.dart';
-import 'package:ridesharingapp/features/ride_request/domain/bloc/ride_bloc.dart';
-import 'package:ridesharingapp/features/ride_request/domain/bloc/ride_event.dart';
-import 'package:ridesharingapp/features/ride_request/domain/bloc/ride_state.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_bloc.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_event.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_state.dart';
 
 class UpdateInfo extends StatefulWidget {
   const UpdateInfo({
@@ -31,14 +31,20 @@ class _UpdateInfoState extends State<UpdateInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<RideBloc, RideState>(
-      listener: (context, state) {
-        Navigator.pop(context);
-      },
-      child: Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: EdgeInsetsGeometry.symmetric(vertical: 10, horizontal: 20),
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsetsGeometry.symmetric(vertical: 10, horizontal: 20),
+          child: BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) async {
+              // if (state is AuthStateLoggedInAsRider) {
+              //   await showSuccessDialog(
+              //     context: context,
+              //     content: 'Updated Successfully',
+              //   );
+              Navigator.pop(context);
+              // }
+            },
             child: Column(
               crossAxisAlignment: .start,
               children: [
@@ -80,8 +86,8 @@ class _UpdateInfoState extends State<UpdateInfo> {
                   child: AppButton(
                     buttonName: 'Update',
                     onPressed: () {
-                      context.read<RideBloc>().add(
-                        RideEventUpdateInfo(
+                      context.read<AuthBloc>().add(
+                        AuthEventUpdateInfo(
                           id: widget.rider.id,
                           data: {
                             widget.propertyToUpdate.toLowerCase():

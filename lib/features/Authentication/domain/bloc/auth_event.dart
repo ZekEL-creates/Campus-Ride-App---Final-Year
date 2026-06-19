@@ -21,6 +21,13 @@ class AuthEventRiderRegister extends AuthEvent {
   });
 }
 
+class AuthEventUpdateInfo extends AuthEvent {
+  final String id;
+  final Map<String, dynamic> data;
+
+  AuthEventUpdateInfo({required this.id, required this.data});
+}
+
 class AuthEventDriverRegister extends AuthEvent {
   final String email;
   final String password;

@@ -4,6 +4,7 @@ import 'package:ridesharingapp/core/constants/colors.dart';
 import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_bloc.dart';
 import 'package:ridesharingapp/features/Authentication/auth_service/firebase_auth_provider.dart';
 import 'package:ridesharingapp/features/Authentication/presentation/views/splash_screen.dart';
+import 'package:ridesharingapp/features/map/data/map_repository.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +18,7 @@ void main() {
         textTheme: TextTheme(),
       ),
       home: BlocProvider<AuthBloc>(
-        create: (context) => AuthBloc(FirebaseAuthProvider()),
+        create: (context) => AuthBloc(FirebaseAuthProvider(), MapRepository()),
         child: SplashScreen(),
       ),
     ),

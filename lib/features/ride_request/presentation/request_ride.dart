@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ridesharingapp/core/constants/colors.dart';
 import 'package:ridesharingapp/core/dialogs/error_dialog.dart';
+import 'package:ridesharingapp/core/enum/status.dart';
 import 'package:ridesharingapp/core/widgets/app_button.dart';
 import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_bloc.dart';
 import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_state.dart';
@@ -200,7 +201,11 @@ class _RequestRideState extends State<RequestRide> {
                       pickUpLongitude: fromLongitude!,
                       destinationLatitude: toLatitude!,
                       destinationLongitude: toLongitude!,
-                      status: 'Requested',
+                      status: Status.Requested.name,
+                      requestedAt: DateTime.now(),
+                      driverId: null,
+                      driverLatitude: null,
+                      driverLongitude: null,
                     );
 
                     context.read<RideBloc>().add(RideEventRequestRide(model!));

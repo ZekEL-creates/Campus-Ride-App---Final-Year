@@ -14,21 +14,31 @@ class FirebaseStorageService {
     required String collectionName,
     required String? id,
     required Map<String, dynamic> data,
+    SetOptions? options,
   }) async {
-    final collection = _storage.collection(collectionName);
-    await collection.doc(id).set(data);
+    try {
+      final collection = _storage.collection(collectionName);
+      //added setOptions-> Incase an issue arises later
+      await collection.doc(id).set(data, options);
+    } on Exception catch (_) {
+      throw GenericErrorException();
+    }
   }
 
   Future<List<T>> getAllData<T>({
     required String collectionName,
     required T Function(Map<String, dynamic>) fromJson,
   }) async {
-    final collection = _storage.collection(collectionName);
-    final collectionSnapshot = await collection.get();
-    final data = collectionSnapshot.docs
-        .map((doc) => fromJson(doc.data()))
-        .toList();
-    return data;
+    try {
+      final collection = _storage.collection(collectionName);
+      final collectionSnapshot = await collection.get();
+      final data = collectionSnapshot.docs
+          .map((doc) => fromJson(doc.data()))
+          .toList();
+      return data;
+    } on Exception catch (_) {
+      throw CouldNotGetException();
+    }
   }
 
   Future<T?> getData<T>({
@@ -49,7 +59,7 @@ class FirebaseStorageService {
     }
   }
 
-  Future<void> updateNote({
+  Future<void> updateData({
     required String collectionName,
     required String id,
     required Map<String, dynamic> data,
@@ -71,6 +81,26 @@ class FirebaseStorageService {
       await collection.doc(id).delete();
     } on Exception catch (_) {
       throw CouldNotDeleteException();
+    }
+  }
+
+  Stream<List<T>> getStreamData<T>({
+    required String collectionName,
+    required String field,
+    required String isEqualTo,
+    required T Function(Map<String, dynamic>) fromJson,
+  }) {
+    try {
+      final collection = _storage.collection(collectionName);
+      return collection
+          .where(field, isEqualTo: isEqualTo)
+          .snapshots()
+          .map(
+            (snapshot) =>
+                snapshot.docs.map((doc) => fromJson(doc.data())).toList(),
+          );
+    } on Exception catch (_) {
+      throw CouldNotGetException();
     }
   }
 }

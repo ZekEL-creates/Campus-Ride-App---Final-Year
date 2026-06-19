@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ridesharingapp/core/constants/colors.dart';
 import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_bloc.dart';
 import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_event.dart';
 import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_state.dart';
-import 'package:ridesharingapp/features/Authentication/presentation/views/driver_map_view.dart';
 import 'package:ridesharingapp/features/Authentication/presentation/login_view.dart';
 //import 'package:ridesharingapp/features/map/presentation/map_view.dart';
 import 'package:ridesharingapp/features/Authentication/presentation/registration%20screens/driver_register_view.dart';
 import 'package:ridesharingapp/features/Authentication/presentation/registration%20screens/rider_register_view.dart';
 import 'package:ridesharingapp/features/Authentication/presentation/registration%20screens/success_screen.dart';
+import 'package:ridesharingapp/features/Authentication/presentation/views/initial_page.dart';
 import 'package:ridesharingapp/features/Authentication/presentation/views/select_role_register_screen.dart';
+import 'package:ridesharingapp/features/driver/presentation/driver_home_page.dart';
 import 'package:ridesharingapp/features/ride_request/presentation/rider_home_page.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
         if (state is AuthStateLoggedInAsRider) {
           return const RiderHomePage();
         } else if (state is AuthStateLoggedInAsDriver) {
-          return const DriverMapView();
+          return const DriverHomePage();
         } else if (state is AuthStateLoggedOut) {
           return const LoginView();
         } else if (state is AuthStateRiderRegistering) {
@@ -44,23 +44,32 @@ class _SplashScreenState extends State<SplashScreen> {
         } else if (state is AuthStateSelectRole) {
           return const SelectRoleToRegister();
         } else if (state is AuthStateLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         } else if (state is AuthStateRegistered) {
           return const SuccessScreen();
+          // } else if (state is AuthStateInitializing) {
+          //   return Scaffold(
+          //     backgroundColor: AppColors.backgroundColor,
+          //     body: BlocListener<AuthBloc, AuthState>(
+          //       listener: (context, state) {
+          //         if(state is AuthState)
+          //       },
+          //       child: Center(
+          //         child: Text(
+          //           "Campus Ride App",
+          //           style: TextStyle(
+          //             color: AppColors.lightBackgroundColor,
+          //             fontWeight: FontWeight.w500,
+          //             fontSize: 30,
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   );
         } else {
-          return Scaffold(
-            backgroundColor: AppColors.backgroundColor,
-            body: Center(
-              child: Text(
-                "Campus Ride App",
-                style: TextStyle(
-                  color: AppColors.lightBackgroundColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 30,
-                ),
-              ),
-            ),
-          );
+          return InitialPage();
         }
       },
     );

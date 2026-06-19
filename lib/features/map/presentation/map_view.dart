@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ridesharingapp/core/widgets/custom_map.dart';
 import 'package:ridesharingapp/features/map/data/map_exceptions.dart';
 import 'package:ridesharingapp/features/map/data/map_repository.dart';
 import 'package:ridesharingapp/features/map/domain/bloc/map_bloc.dart';
@@ -42,25 +42,30 @@ class _MapViewState extends State<MapView> {
             return const Center(child: CircularProgressIndicator());
           }
           if (state is MapStateLoaded) {
-            return GoogleMap(
-              padding: EdgeInsets.only(top: 50, bottom: -20, right: 10),
-              mapType: MapType.normal,
-              myLocationEnabled: true,
-              mapToolbarEnabled: true,
-              style: darkMapStyle,
-              onMapCreated: (controller) {},
-              initialCameraPosition: CameraPosition(
-                target: state.currentLocation,
-                zoom: 18,
-              ),
+            return CustomMap(
+              target: state.currentLocation,
               markers: state.markers,
-              cameraTargetBounds: CameraTargetBounds(
-                LatLngBounds(
-                  southwest: LatLng(6.6660, 3.6340),
-                  northeast: LatLng(6.6735, 3.6410),
-                ),
-              ),
             );
+
+            // GoogleMap(
+            //   padding: EdgeInsets.only(top: 50, bottom: -20, right: 10),
+            //   mapType: MapType.normal,
+            //   myLocationEnabled: true,
+            //   mapToolbarEnabled: true,
+            //   style: darkMapStyle,
+            //   onMapCreated: (controller) {},
+            //   initialCameraPosition: CameraPosition(
+            //     target: state.currentLocation,
+            //     zoom: 18,
+            //   ),
+            //   markers: state.markers,
+            //   cameraTargetBounds: CameraTargetBounds(
+            //     LatLngBounds(
+            //       southwest: LatLng(6.6660, 3.6340),
+            //       northeast: LatLng(6.6735, 3.6410),
+            //     ),
+            //   ),
+            // );
           }
           if (state is MapStateError) {
             if (state.exception is LocationPermissionDeniedException) {
@@ -82,13 +87,7 @@ class _MapViewState extends State<MapView> {
               );
             }
           }
-          return Scaffold(
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [Text("What the hell is going on?")],
-            ),
-          );
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
         },
       ),
     );

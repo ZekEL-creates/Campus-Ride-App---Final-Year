@@ -8,6 +8,7 @@ import 'package:ridesharingapp/features/ride_request/presentation/accounts_pages
 import 'package:ridesharingapp/features/ride_request/presentation/home.dart';
 import 'package:ridesharingapp/features/ride_request/presentation/request_ride.dart';
 import 'package:ridesharingapp/features/ride_request/presentation/ride.dart';
+import 'package:ridesharingapp/features/ride_request/presentation/ride_searching_view.dart';
 
 class RiderHomePage extends StatefulWidget {
   const RiderHomePage({super.key});
@@ -23,46 +24,63 @@ class _RiderHomePageState extends State<RiderHomePage> {
     return BlocProvider(
       create: (context) => RideBloc(RideRepository()),
       child: Scaffold(
-        body: BlocBuilder<RideBloc, RideState>(
-          builder: (context, state) {
-            if (state is RideStateLoading) {
-              return Scaffold(body: Center(child: CircularProgressIndicator()));
-            } else if (state is RideStateSelectLocation) {
-              return RequestRide(state: state);
-            } else if (state is RideStateError) {
-              return Center(child: Text(state.exception.toString()));
+        body: BlocListener<RideBloc, RideState>(
+          listener: (context, state) {
+            if (state is RideStateRequested) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => RideSearchingView(
+                    ride: state.ride,
+                    routePoints: state.route,
+                  ),
+                ),
+              );
             }
-            return Scaffold(
-              body: IndexedStack(
-                index: _selectedIndex,
-                children: [Home(), Ride(), Account()],
-              ),
-
-              bottomNavigationBar: BottomNavigationBar(
-                currentIndex: _selectedIndex,
-                unselectedItemColor: AppColors.backgroundColor,
-                onTap: (index) {
-                  _selectedIndex = index;
-                  setState(() {});
-                },
-                selectedItemColor: AppColors.lightDarktextColor,
-                items: [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: 'Home',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.schedule),
-                    label: 'Rides',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person_rounded),
-                    label: 'Account',
-                  ),
-                ],
-              ),
-            );
           },
+          child: BlocBuilder<RideBloc, RideState>(
+            builder: (context, state) {
+              if (state is RideStateLoading) {
+                return Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              } else if (state is RideStateSelectLocation) {
+                return RequestRide(state: state);
+              } else if (state is RideStateError) {
+                return Center(child: Text(state.exception.toString()));
+              }
+              return Scaffold(
+                body: IndexedStack(
+                  index: _selectedIndex,
+                  children: [Home(), Ride(), Account()],
+                ),
+
+                bottomNavigationBar: BottomNavigationBar(
+                  currentIndex: _selectedIndex,
+                  unselectedItemColor: AppColors.backgroundColor,
+                  onTap: (index) {
+                    _selectedIndex = index;
+                    setState(() {});
+                  },
+                  selectedItemColor: AppColors.lightDarktextColor,
+                  items: [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home),
+                      label: 'Home',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.schedule),
+                      label: 'Rides',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.person_rounded),
+                      label: 'Account',
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

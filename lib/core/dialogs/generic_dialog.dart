@@ -8,6 +8,7 @@ Future<T?> showGenericDialog<T>({
   required String title,
   required String content,
   required DialogOptionsBuilder optionsBuilder,
+  Widget? icon
 }) {
   final options = optionsBuilder();
   return showDialog<T>(
@@ -16,6 +17,7 @@ Future<T?> showGenericDialog<T>({
       return AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         backgroundColor: AppColors.lightDarktextColor,
+        icon: icon,
         title: Text(
           title,
           style: TextStyle(color: AppColors.lightBackgroundColor),

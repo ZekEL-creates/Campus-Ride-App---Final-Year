@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ridesharingapp/core/constants/colors.dart';
 import 'package:ridesharingapp/core/constants/constants.dart';
 import 'package:ridesharingapp/features/Authentication/data/models/app_user.dart';
-import 'package:ridesharingapp/features/ride_request/domain/bloc/ride_bloc.dart';
+import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_bloc.dart';
 import 'package:ridesharingapp/features/ride_request/presentation/accounts_pages/update_info.dart';
 
 class ProfileList extends StatelessWidget {
@@ -27,7 +27,7 @@ class ProfileList extends StatelessWidget {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => BlocProvider.value(
-              value: context.read<RideBloc>(),
+              value: context.read<AuthBloc>(),
               child: UpdateInfo(propertyToUpdate: propertyName, rider: rider),
             ),
           ),

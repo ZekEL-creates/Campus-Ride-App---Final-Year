@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ridesharingapp/core/constants/constants.dart';
 import 'package:ridesharingapp/features/map/data/map_repository.dart';
 import 'package:ridesharingapp/features/map/domain/bloc/map_event.dart';
 import 'package:ridesharingapp/features/map/domain/bloc/map_state.dart';
@@ -10,11 +11,13 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     on<MapEventLoad>((event, emit) async {
       emit(MapStateLoading());
       try {
-        final position = await repository.getCurrentLocation();
-        final locations = await repository.getCampusLocations();
         Set<Marker> markers = {};
 
-        for (var doc in locations.docs) {
+        if (locations == null || position == null) {
+          emit(MapStateError(exception: Exception("An Error Occured")));
+        }
+
+        for (var doc in locations!.docs) {
           markers.add(
             Marker(
               markerId: MarkerId(doc.id),
@@ -28,7 +31,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         }
         emit(
           MapStateLoaded(
-            currentLocation: LatLng(position.latitude, position.longitude),
+            currentLocation: LatLng(position!.latitude, position!.longitude),
             markers: markers,
           ),
         );

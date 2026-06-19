@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:ridesharingapp/features/Authentication/data/models/app_user.dart';
+import 'package:ridesharingapp/features/map/data/map_repository.dart';
 import 'package:ridesharingapp/features/map/data/models/campus_location.dart';
 import 'package:ridesharingapp/features/ride_request/data/ride_repository.dart';
 import 'package:ridesharingapp/features/ride_request/domain/bloc/ride_event.dart';
@@ -10,10 +11,17 @@ class RideBloc extends Bloc<RideEvent, RideState> {
   final RideRepository repository;
   RideBloc(this.repository) : super(RideStateInitial()) {
     on<RideEventRequestRide>((event, emit) async {
+      final MapRepository mapRepository = MapRepository();
       try {
         emit(RideStateLoading());
-        repository.createRide(event.ride);
-        emit(RideStateRequested());
+        await repository.createRide(event.ride);
+        final route = await mapRepository.getRoute(
+          startLat: event.ride.pickUpLatitude,
+          startLng: event.ride.pickUpLongitude,
+          endLat: event.ride.destinationLatitude,
+          endLng: event.ride.destinationLongitude,
+        );
+        emit(RideStateRequested(ride: event.ride, route: route));
       } on Exception catch (exception) {
         emit(RideStateError(exception));
       }
@@ -44,7 +52,7 @@ class RideBloc extends Bloc<RideEvent, RideState> {
       try {
         emit(RideStateLoading());
         final FirebaseStorageService storage = FirebaseStorageService();
-        await storage.updateNote(
+        await storage.updateData(
           collectionName: 'users',
           id: event.id,
           data: event.data,
@@ -54,7 +62,7 @@ class RideBloc extends Bloc<RideEvent, RideState> {
           id: event.id,
           fromJson: AppUser.fromJson,
         );
-        emit(RideStateInitial());
+        emit(RideStateUpdateSuccess());
       } on Exception catch (exception) {
         emit(RideStateError(exception));
       }

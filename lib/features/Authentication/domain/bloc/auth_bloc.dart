@@ -1,10 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ridesharingapp/core/constants/constants.dart';
 import 'package:ridesharingapp/features/Authentication/auth_service/auth_provider.dart';
+import 'package:ridesharingapp/features/Authentication/data/models/app_user.dart';
 import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_event.dart';
 import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_state.dart';
+import 'package:ridesharingapp/features/map/data/map_repository.dart';
+import 'package:ridesharingapp/services/firebase_storage_service.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc(AuthProvider provider) : super(const AuthStateUnintialized()) {
+  AuthBloc(AuthProvider provider, MapRepository repository)
+    : super(const AuthStateUnintialized()) {
     on<AuthEventRiderRegister>((event, emit) async {
       try {
         emit(AuthStateRiderRegistering(exception: null, isLoading: true));
@@ -54,17 +59,39 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<AuthEventInitialize>((event, emit) async {
-      await provider.initialize();
-      final user = await provider.currentUser;
-      if (user == null) {
-        emit(const AuthStateLoggedOut(exception: null, isLoading: false));
-      } else {
-        if (user.role == 'rider') {
-          emit(AuthStateLoggedInAsRider(user));
-        } else if (user.role == 'driver') {
-          emit(AuthStateLoggedInAsDriver(user));
+      try {
+        await provider.initialize();
+        position = await repository.getCurrentLocation();
+        locations = await repository.getCampusLocations();
+        final user = await provider.currentUser;
+        if (user == null) {
+          emit(const AuthStateLoggedOut(exception: null, isLoading: false));
+        } else {
+          if (user.role == 'rider') {
+            emit(AuthStateLoggedInAsRider(user));
+          } else if (user.role == 'driver') {
+            emit(AuthStateLoggedInAsDriver(user));
+          }
         }
+      } on Exception catch (exception) {
+        emit(AuthStateInitializing(exception: exception));
       }
+    });
+
+    on<AuthEventUpdateInfo>((event, emit) async {
+      emit(AuthStateLoading());
+      final FirebaseStorageService storage = FirebaseStorageService();
+      await storage.updateData(
+        collectionName: 'users',
+        id: event.id,
+        data: event.data,
+      );
+      final updatedUser = await storage.getData(
+        collectionName: 'users',
+        id: event.id,
+        fromJson: AppUser.fromJson,
+      );
+      emit(AuthStateLoggedInAsRider(updatedUser!));
     });
 
     on<AuthEventLogIn>((event, emit) async {

@@ -3,7 +3,7 @@ import 'package:ridesharingapp/core/constants/colors.dart';
 
 class AppButton extends StatelessWidget {
   final String buttonName;
-  final Function() onPressed;
+  final VoidCallback? onPressed;
   final Color? backgroundColor;
   final Color? foregroundColor;
   final double? border;
