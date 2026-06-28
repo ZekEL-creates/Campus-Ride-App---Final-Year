@@ -12,27 +12,31 @@ class ProfileList extends StatelessWidget {
     required this.propertyName,
     required this.property,
     required this.value,
-    required this.rider,
+    required this.user,
+    this.onTap,
   });
   final String propertyName;
   final String property;
   final String value;
-  final AppUser rider;
+  final AppUser user;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        updatePropertyName = propertyName;
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: context.read<AuthBloc>(),
-              child: UpdateInfo(propertyToUpdate: propertyName, rider: rider),
-            ),
-          ),
-        );
-      },
+      onTap:
+          onTap ??
+          () {
+            updatePropertyName = propertyName;
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<AuthBloc>(),
+                  child: UpdateInfo(propertyToUpdate: propertyName, user: user),
+                ),
+              ),
+            );
+          },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

@@ -91,7 +91,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         id: event.id,
         fromJson: AppUser.fromJson,
       );
-      emit(AuthStateLoggedInAsRider(updatedUser!));
+      if (updatedUser!.role == 'rider') {
+        emit(AuthStateLoggedInAsRider(updatedUser));
+      } else if (updatedUser.role == 'driver') {
+        emit(AuthStateLoggedInAsDriver(updatedUser));
+      }
     });
 
     on<AuthEventLogIn>((event, emit) async {

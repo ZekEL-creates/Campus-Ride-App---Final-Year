@@ -158,7 +158,7 @@ class _AccountState extends State<Account> {
                             propertyName: 'Name',
                             property: 'Name:',
                             value: rider.name,
-                            rider: rider,
+                            user: rider,
                           ),
 
                           Divider(height: 40),
@@ -167,7 +167,7 @@ class _AccountState extends State<Account> {
                             propertyName: 'Email',
                             property: 'Email:',
                             value: rider.email,
-                            rider: rider,
+                            user: rider,
                           ),
                           Divider(height: 40),
 
@@ -175,7 +175,7 @@ class _AccountState extends State<Account> {
                             propertyName: 'Phone Number',
                             property: 'Phone Number:',
                             value: '09054508980',
-                            rider: rider,
+                            user: rider,
                           ),
                           Divider(height: 40),
                           Row(

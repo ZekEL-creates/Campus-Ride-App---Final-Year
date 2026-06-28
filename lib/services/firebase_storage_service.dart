@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:ridesharingapp/core/constants/constants.dart';
 import 'package:ridesharingapp/services/storage_exceptions.dart';
 
 class FirebaseStorageService {
@@ -16,11 +18,18 @@ class FirebaseStorageService {
     required Map<String, dynamic> data,
     SetOptions? options,
   }) async {
+    print('CREAING DAA');
     try {
+      await checkConnection();
       final collection = _storage.collection(collectionName);
       //added setOptions-> Incase an issue arises later
       await collection.doc(id).set(data, options);
-    } on Exception catch (_) {
+      print('CREAED');
+    } on FirebaseException catch (e) {
+      print('An ERROR OCCURED ${e.code}');
+      throw GenericErrorException();
+    } catch (e) {
+      print('An ERROR OCCURED $e');
       throw GenericErrorException();
     }
   }
@@ -30,14 +39,19 @@ class FirebaseStorageService {
     required T Function(Map<String, dynamic>) fromJson,
   }) async {
     try {
+      await checkConnection();
       final collection = _storage.collection(collectionName);
       final collectionSnapshot = await collection.get();
       final data = collectionSnapshot.docs
           .map((doc) => fromJson(doc.data()))
           .toList();
       return data;
-    } on Exception catch (_) {
+    } on FirebaseException catch (e) {
+      print('An ERROR OCCURED ${e.code}');
       throw CouldNotGetException();
+    } catch (e) {
+      print('An ERROR OCCURED $e');
+      throw GenericErrorException();
     }
   }
 
@@ -47,6 +61,7 @@ class FirebaseStorageService {
     required T Function(Map<String, dynamic>) fromJson,
   }) async {
     try {
+      await checkConnection();
       final collection = _storage.collection(collectionName);
       final doc = await collection.doc(id).get();
       if (!doc.exists) {
@@ -54,8 +69,12 @@ class FirebaseStorageService {
       }
       T data = fromJson(doc.data()!);
       return data;
-    } catch (_) {
+    } on FirebaseException catch (e) {
+      print('An ERROR OCCURED ${e.code}');
       throw CouldNotGetException();
+    } catch (e) {
+      print('An ERROR OCCURED $e');
+      throw GenericErrorException();
     }
   }
 
@@ -65,10 +84,15 @@ class FirebaseStorageService {
     required Map<String, dynamic> data,
   }) async {
     try {
+      await checkConnection();
       final collection = _storage.collection(collectionName);
       await collection.doc(id).update(data);
-    } catch (_) {
+    } on FirebaseException catch (e) {
+      print('An ERROR OCCURED ${e.code}');
       throw CouldNotUpdateException();
+    } catch (e) {
+      print('An ERROR OCCURED $e');
+      throw GenericErrorException();
     }
   }
 
@@ -78,9 +102,14 @@ class FirebaseStorageService {
   }) async {
     final collection = _storage.collection(collectionName);
     try {
+      await checkConnection();
       await collection.doc(id).delete();
-    } on Exception catch (_) {
+    } on FirebaseException catch (e) {
+      print('An ERROR OCCURED ${e.code}');
       throw CouldNotDeleteException();
+    } catch (e) {
+      print('An ERROR OCCURED $e');
+      throw GenericErrorException();
     }
   }
 
@@ -91,16 +120,20 @@ class FirebaseStorageService {
     required T Function(Map<String, dynamic>) fromJson,
   }) {
     try {
+      print('GEING SREAM DAA');
       final collection = _storage.collection(collectionName);
-      return collection
-          .where(field, isEqualTo: isEqualTo)
-          .snapshots()
-          .map(
-            (snapshot) =>
-                snapshot.docs.map((doc) => fromJson(doc.data())).toList(),
-          );
-    } on Exception catch (_) {
+      return collection.where(field, isEqualTo: isEqualTo).snapshots().map((
+        snapshot,
+      ) {
+        print('GO DAA');
+        return snapshot.docs.map((doc) => fromJson(doc.data())).toList();
+      });
+    } on FirebaseException catch (e) {
+      print('An ERROR OCCURED ${e.code}');
       throw CouldNotGetException();
+    } catch (e) {
+      print('An ERROR OCCURED $e');
+      throw GenericErrorException();
     }
   }
 }

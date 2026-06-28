@@ -10,6 +10,8 @@ class AppButton extends StatelessWidget {
   final Widget? child;
   final BorderSide? side;
   final Color? overlayColor;
+  final double? horizontalPadding;
+  final double? verticalPadding;
 
   const AppButton({
     super.key,
@@ -21,6 +23,8 @@ class AppButton extends StatelessWidget {
     this.child,
     this.side,
     this.overlayColor,
+    this.horizontalPadding,
+    this.verticalPadding,
   });
 
   @override
@@ -38,12 +42,16 @@ class AppButton extends StatelessWidget {
         backgroundColor: WidgetStatePropertyAll(
           backgroundColor ?? AppColors.backgroundColor,
         ),
+
         foregroundColor: WidgetStatePropertyAll(
           foregroundColor ?? AppColors.lightBackgroundColor,
         ),
         elevation: WidgetStatePropertyAll(0),
         padding: WidgetStateProperty.all(
-          EdgeInsets.symmetric(horizontal: 100, vertical: 20),
+          EdgeInsets.symmetric(
+            horizontal: horizontalPadding ?? 100,
+            vertical: verticalPadding ?? 20,
+          ),
         ),
         overlayColor: WidgetStatePropertyAll(overlayColor),
       ),

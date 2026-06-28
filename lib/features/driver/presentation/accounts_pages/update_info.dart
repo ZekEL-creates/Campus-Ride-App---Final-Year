@@ -11,10 +11,10 @@ class UpdateInfo extends StatefulWidget {
   const UpdateInfo({
     super.key,
     required this.propertyToUpdate,
-    required this.user,
+    required this.rider,
   });
   final String propertyToUpdate;
-  final AppUser user;
+  final AppUser rider;
 
   @override
   State<UpdateInfo> createState() => _UpdateInfoState();
@@ -88,7 +88,7 @@ class _UpdateInfoState extends State<UpdateInfo> {
                     onPressed: () {
                       context.read<AuthBloc>().add(
                         AuthEventUpdateInfo(
-                          id: widget.user.id,
+                          id: widget.rider.id,
                           data: {
                             widget.propertyToUpdate.toLowerCase():
                                 textController.text,

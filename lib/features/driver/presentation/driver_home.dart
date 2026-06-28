@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ridesharingapp/core/constants/colors.dart';
 
 import 'package:ridesharingapp/core/widgets/app_button.dart';
+import 'package:ridesharingapp/core/widgets/error_view.dart';
 import 'package:ridesharingapp/features/Authentication/data/models/app_user.dart';
 import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_bloc.dart';
 import 'package:ridesharingapp/features/Authentication/domain/bloc/auth_state.dart';
@@ -39,35 +40,23 @@ class _DriverHomeState extends State<DriverHome> {
         final driverState = state as DriverStateDriver;
         if (driverState.error != null) {
           return Scaffold(
-            body: Column(
-              mainAxisSize: .min,
-              children: [
-                Icon(
-                  Icons.signal_wifi_0_bar_sharp,
-                  size: 30,
-                  color: AppColors.lightDarktextColor,
-                ),
-                SizedBox(height: 20),
-                Text('An Error has occured. Please try again'),
-                AppButton(
-                  buttonName: 'Retry',
-                  onPressed: () {
-                    driverState.isLoading
-                        ? null
-                        : () async {
-                            if (driverState.isOnline) {
-                              context.read<DriverBloc>().add(
-                                DriverEventGoOffline(driver!),
-                              );
-                            } else {
-                              context.read<DriverBloc>().add(
-                                DriverEventGoOnline(driver: driver!),
-                              );
-                            }
-                          };
-                  },
-                ),
-              ],
+            body: ErrorView(
+              message:
+                  'An error occurred. Make sure Location Service is turned on or Please check your connection and try again.',
+              retryLabel: driverState.isOnline ? 'Go Offline' : 'Go Online',
+              onRetry: driverState.isLoading
+                  ? () {} // no-op while loading
+                  : () {
+                      if (driverState.isOnline) {
+                        context.read<DriverBloc>().add(
+                          DriverEventGoOffline(driver!),
+                        );
+                      } else {
+                        context.read<DriverBloc>().add(
+                          DriverEventGoOnline(driver: driver!),
+                        );
+                      }
+                    },
             ),
           );
         }
@@ -113,10 +102,11 @@ class _DriverHomeState extends State<DriverHome> {
                         : AppColors.redColor,
                     child: driverState.isLoading
                         ? SizedBox(
-                            height: 20,
-                            width: 20,
+                            height: 15,
+                            width: 15,
                             child: const CircularProgressIndicator(
                               color: Color.fromARGB(255, 131, 131, 131),
+                              strokeWidth: 3,
                             ),
                           )
                         : Row(
@@ -127,14 +117,14 @@ class _DriverHomeState extends State<DriverHome> {
                                 color: driverState.isOnline
                                     ? AppColors.greenColor
                                     : AppColors.redColor,
-                                size: 13,
+                                size: 7,
                               ),
-                              SizedBox(width: 10),
+                              SizedBox(width: 4),
                               Text(
                                 driverState.isOnline ? 'Online' : 'Offline',
                                 style: TextStyle(
                                   fontWeight: .w700,
-                                  fontSize: 18,
+                                  fontSize: 14,
                                 ),
                               ),
                             ],
@@ -149,3 +139,37 @@ class _DriverHomeState extends State<DriverHome> {
     );
   }
 }
+
+
+// Scaffold(
+//             body: Column(
+//               mainAxisSize: .min,
+//               children: [
+//                 Icon(
+//                   Icons.signal_wifi_0_bar_sharp,
+//                   size: 30,
+//                   color: AppColors.lightDarktextColor,
+//                 ),
+//                 SizedBox(height: 20),
+//                 Text('An Error has occured. Please try again'),
+//                 AppButton(
+//                   buttonName: 'Retry',
+//                   onPressed: () {
+//                     driverState.isLoading
+//                         ? null
+//                         : () async {
+//                             if (driverState.isOnline) {
+//                               context.read<DriverBloc>().add(
+//                                 DriverEventGoOffline(driver!),
+//                               );
+//                             } else {
+//                               context.read<DriverBloc>().add(
+//                                 DriverEventGoOnline(driver: driver!),
+//                               );
+//                             }
+//                           };
+//                   },
+//                 ),
+//               ],
+//             ),
+//           );

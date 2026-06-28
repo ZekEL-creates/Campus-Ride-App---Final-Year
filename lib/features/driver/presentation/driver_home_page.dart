@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ridesharingapp/core/constants/colors.dart';
 import 'package:ridesharingapp/features/driver/data/driver_repository.dart';
 import 'package:ridesharingapp/features/driver/domain/driver_bloc.dart';
+import 'package:ridesharingapp/features/driver/domain/driver_event.dart';
 import 'package:ridesharingapp/features/driver/domain/driver_state.dart';
-import 'package:ridesharingapp/features/driver/presentation/account_page.dart';
+import 'package:ridesharingapp/features/driver/presentation/accounts_pages/account_page.dart';
 import 'package:ridesharingapp/features/driver/presentation/driver_home.dart';
+import 'package:ridesharingapp/features/driver/presentation/ride_tracking_page.dart';
 import 'package:ridesharingapp/features/driver/presentation/rides_page.dart';
 import 'package:ridesharingapp/features/map/data/map_repository.dart';
 
@@ -24,6 +26,14 @@ class _DriverHomePageState extends State<DriverHomePage> {
       create: (context) => DriverBloc(DriverRepository(), MapRepository()),
       child: BlocBuilder<DriverBloc, DriverState>(
         builder: (context, state) {
+          final driverState = state as DriverStateDriver;
+          if (driverState.isViewingTracking) {
+            return RideTrackingPage(
+              onBack: () {
+                context.read<DriverBloc>().add(DriverEventCloseTracking());
+              },
+            );
+          }
           return Scaffold(
             body: IndexedStack(
               index: _selectedIndex,

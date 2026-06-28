@@ -8,30 +8,40 @@ import 'package:ridesharingapp/features/map/data/map_exceptions.dart';
 
 class MapRepository {
   Future<Position> getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+    try {
+      bool serviceEnabled;
+      LocationPermission permission;
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
-    if (!serviceEnabled) {
-      throw LocationServiceDisabledException();
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-
-      if (permission == LocationPermission.denied) {
-        throw LocationPermissionDeniedException();
+      if (!serviceEnabled) {
+        print('An ERROR OCCURED');
+        throw LocationServiceDisabledException();
       }
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+
+        if (permission == LocationPermission.denied) {
+          throw LocationPermissionDeniedException();
+        }
+      }
+      return await Geolocator.getCurrentPosition();
+    } on LocationServiceDisabledException {
+      throw LocationServiceDeniedException();
+    } catch (e) {
+      print('An ERROR OCCURED' + e.runtimeType.toString());
+      throw GenericLocationException();
     }
-    return await Geolocator.getCurrentPosition();
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getCampusLocations() {
+  Future<QuerySnapshot<Map<String, dynamic>>> getCampusLocations() async {
     try {
+      await checkConnection();
       return FirebaseFirestore.instance.collection('campus_locations').get();
-    } on Exception catch (_) {
+    } on FirebaseException catch (e) {
+      print('An ERROR OCCURED $e');
       throw CouldNotGetDataException();
     }
   }
@@ -42,16 +52,21 @@ class MapRepository {
     required double endLat,
     required double endLng,
   }) async {
-    PolylinePoints points = PolylinePoints(apiKey: googleMapKey);
-    final result = await points.getRouteBetweenCoordinates(
-      request: PolylineRequest(
-        origin: PointLatLng(startLat, startLng),
-        destination: PointLatLng(endLat, endLng),
-        mode: TravelMode.driving,
-      ),
-    );
-    return result.points
-        .map((point) => LatLng(point.latitude, point.longitude))
-        .toList();
+    try {
+      PolylinePoints points = PolylinePoints(apiKey: googleMapKey);
+      final result = await points.getRouteBetweenCoordinates(
+        request: PolylineRequest(
+          origin: PointLatLng(startLat, startLng),
+          destination: PointLatLng(endLat, endLng),
+          mode: TravelMode.driving,
+        ),
+      );
+      return result.points
+          .map((point) => LatLng(point.latitude, point.longitude))
+          .toList();
+    } on Exception catch (e) {
+      print('An ERROR OCCURED ' + e.runtimeType.toString());
+      throw CouldNotGetRouteForPolyline();
+    }
   }
 }

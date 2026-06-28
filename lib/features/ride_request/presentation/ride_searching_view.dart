@@ -78,6 +78,7 @@ class _RideSearchingViewState extends State<RideSearchingView> {
             onMapCreated: (controller) {
               fitRoute(controller: controller, ride: widget.ride);
             },
+            myLocationEnabled: false,
           ),
           DraggableScrollableSheet(
             controller: sheetController,
@@ -109,7 +110,7 @@ class _RideSearchingViewState extends State<RideSearchingView> {
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   Expanded(
                     child: ListView.builder(
                       controller: scrollController,

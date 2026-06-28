@@ -9,12 +9,16 @@ class CustomMap extends StatelessWidget {
     this.zoom,
     this.polyline,
     this.onMapCreated,
+    this.myLocationEnabled,
+    this.zoomControlsEnabled,
   });
 
   final LatLng target;
   final Set<Marker> markers;
   final double? zoom;
   final Set<Polyline>? polyline;
+  final bool? myLocationEnabled;
+  final bool? zoomControlsEnabled;
   final Function(GoogleMapController)? onMapCreated;
 
   String? get darkMapStyle => null;
@@ -23,7 +27,7 @@ class CustomMap extends StatelessWidget {
     return GoogleMap(
       padding: EdgeInsets.only(top: 50, bottom: -20, right: 10),
       mapType: MapType.normal,
-      myLocationEnabled: true,
+      myLocationEnabled: myLocationEnabled ?? true,
       mapToolbarEnabled: true,
       style: darkMapStyle,
       onMapCreated: onMapCreated,

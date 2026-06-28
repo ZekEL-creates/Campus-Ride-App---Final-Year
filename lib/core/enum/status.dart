@@ -1,1 +1,1 @@
-enum Status { Requested, progress, accepted, decline, completed }
+enum Status { Requested, started, accepted, decline, completed, cancelled }

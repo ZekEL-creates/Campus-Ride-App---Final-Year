@@ -32,6 +32,8 @@ class _RequestRideState extends State<RequestRide> {
   double? fromLongitude;
   double? toLatitude;
   double? toLongitude;
+  String? pickUpName;
+  String? destinationName;
   final uuid = Uuid();
   late final String riderId;
   @override
@@ -155,12 +157,19 @@ class _RequestRideState extends State<RequestRide> {
                         fromFocusNode.unfocus();
                         fromLatitude = filteredLocations[index].latitude;
                         fromLongitude = filteredLocations[index].longitude;
+                        if (fromLatitude != null && fromLongitude != null) {
+                          pickUpName = filteredLocations[index].locationName;
+                        }
                       } else if (searchText == toText) {
                         toController.text =
                             filteredLocations[index].locationName;
                         toFocusNode.unfocus();
                         toLatitude = filteredLocations[index].latitude;
                         toLongitude = filteredLocations[index].longitude;
+                        if (toLatitude != null && toLongitude != null) {
+                          destinationName =
+                              filteredLocations[index].locationName;
+                        }
                       }
                     },
                     leading: Icon(Icons.location_on, color: Colors.red),
@@ -186,7 +195,9 @@ class _RequestRideState extends State<RequestRide> {
                     if (fromLatitude == null ||
                         fromLongitude == null ||
                         toLatitude == null ||
-                        toLongitude == null) {
+                        toLongitude == null ||
+                        pickUpName == null ||
+                        destinationName == null) {
                       showErrorDialog(
                         content: 'Please Select desired Locations',
                         context: context,
@@ -206,6 +217,9 @@ class _RequestRideState extends State<RequestRide> {
                       driverId: null,
                       driverLatitude: null,
                       driverLongitude: null,
+                      pickUpName: pickUpName!,
+                      destinationName: destinationName!,
+                      rejectedDrivers: [],
                     );
 
                     context.read<RideBloc>().add(RideEventRequestRide(model!));

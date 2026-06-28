@@ -4,6 +4,7 @@ import 'package:ridesharingapp/core/enum/status.dart';
 import 'package:ridesharingapp/features/Authentication/data/models/app_user.dart';
 import 'package:ridesharingapp/features/ride_request/data/ride_model.dart';
 import 'package:ridesharingapp/services/firebase_storage_service.dart';
+import 'package:ridesharingapp/services/storage_exceptions.dart';
 
 class DriverRepository {
   final _storage = FirebaseStorageService();
@@ -12,20 +13,24 @@ class DriverRepository {
     required AppUser driver,
     required LatLng location,
   }) async {
-    await _storage.create(
-      collectionName: 'drivers',
-      id: driver.id,
-      data: {
-        'isOnline': true,
-        'isAvailable': true,
-        'lastSeen': FieldValue.serverTimestamp(),
-        'currentLocation': {
-          'latitude': location.latitude,
-          'longitude': location.longitude,
+    try {
+      await _storage.create(
+        collectionName: 'drivers',
+        id: driver.id,
+        data: {
+          'isOnline': true,
+          'isAvailable': true,
+          'lastSeen': FieldValue.serverTimestamp(),
+          'currentLocation': {
+            'latitude': location.latitude,
+            'longitude': location.longitude,
+          },
         },
-      },
-      options: SetOptions(merge: true),
-    );
+        options: SetOptions(merge: true),
+      );
+    } on Exception catch (_) {
+      throw GenericErrorException();
+    }
   }
 
   Future<void> goOffline({required AppUser driver}) async {
@@ -69,10 +74,20 @@ class DriverRepository {
     required AppUser driver,
     required String rideId,
   }) async {
+    final driverData = await _storage.getData(
+      collectionName: 'drivers',
+      id: driver.id,
+      fromJson: Driver.fromJson,
+    );
     await _storage.updateData(
       collectionName: 'rides',
       id: rideId,
-      data: {'status': Status.accepted.name, 'driverId': driver.id},
+      data: {
+        'status': Status.accepted.name,
+        'driverId': driver.id,
+        'driver_latitude': driverData!.driverLatitude,
+        'driver_longitude': driverData.driverLongitude,
+      },
     );
     await _storage.updateData(
       collectionName: 'drivers',
@@ -99,7 +114,7 @@ class DriverRepository {
       collectionName: 'rides',
       id: rideId,
       data: {
-        'status': Status.progress.name,
+        'status': Status.started.name,
         'startedAt': FieldValue.serverTimestamp(),
       },
     );

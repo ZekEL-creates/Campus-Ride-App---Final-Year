@@ -58,3 +58,16 @@ class DriverEventCompleteRide extends DriverEvent {
 
   DriverEventCompleteRide({required this.rideId});
 }
+
+class DriverEventTrackRide extends DriverEvent {
+  final RideModel ride;
+  DriverEventTrackRide(this.ride);
+}
+
+class DriverEventCloseTracking extends DriverEvent {
+  const DriverEventCloseTracking();
+}
+
+class DriverEventResumeTracking extends DriverEvent {
+  const DriverEventResumeTracking();
+}
